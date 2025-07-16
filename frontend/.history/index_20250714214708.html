@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finance Tracker</title>
+
+    <!-- ✅ Prevent flicker by applying theme before CSS loads -->
+    <script>
+      (function () {
+        try {
+          const storedTheme = localStorage.getItem("theme");
+          const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const theme = storedTheme || (systemPrefersDark ? "dark" : "light");
+
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+          } else {
+            document.documentElement.classList.remove("dark");
+          }
+        } catch (e) {
+          console.error("Theme preload error:", e);
+        }
+      })();
+    </script>
+
+    <!-- ✅ Optional: fallback background before Tailwind loads -->
+    <style>
+      html {
+        background-color: #ffffff;
+        color: #000000;
+      }
+
+      html.dark {
+        background-color: #0f172a; /* Tailwind's bg-gray-900 */
+        color: #f8fafc;
+      }
+
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

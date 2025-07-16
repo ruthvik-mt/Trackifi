@@ -1,0 +1,127 @@
+import { useEffect, useState } from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import Layout from "../Dashboard/Layout";
+import { useAxios } from "../../hooks/useAxios";
+import { CategoryBreakdownItem } from "../../types/Insight";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { MonthPicker } from "@/components/MonthPicker";
+
+const COLORS = [
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff7f7f",
+  "#8dd1e1",
+  "#a4de6c",
+];
+
+export default function CategoryBreakdown() {
+  const axios = useAxios();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [data, setData] = useState<CategoryBreakdownItem[]>([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const month = selectedDate.toISOString().slice(0, 7);
+
+  useEffect(() => {
+    setError("");
+    setLoading(true);
+    axios
+      .get("/insights/category-breakdown", { params: { month } })
+      .then((res) => {
+        const raw = res.data;
+        const transformed = Object.entries(raw).map(([categoryName, amount]) => ({
+          categoryName,
+          amount: typeof amount === "number" ? amount : Number(amount),
+        }));
+        setData(transformed);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch category breakdown", err);
+        setError("Failed to load data. Please try again.");
+      })
+      .finally(() => setLoading(false));
+  }, [month, axios]);
+
+  return (
+    <Layout>
+      <motion.div
+        className="space-y-6 px-4 md:px-8 max-w-4xl mx-auto"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Card className="shadow-lg border bg-gradient-to-br from-indigo-50 to-white dark:from-background dark:to-card rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-xl md:text-2xl font-bold text-indigo-800 dark:text-indigo-300">
+              Spending Breakdown – {new Date(month + "-01").toLocaleDateString("en-US", {
+                month: "long",
+                year: "numeric",
+              })}
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="text-sm font-medium text-foreground flex items-center gap-1">
+                📅 Choose Month:
+              </label>
+              <MonthPicker selected={selectedDate} onChange={(date) => date && setSelectedDate(date)} />
+            </div>
+
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            {loading && !error && (
+              <p className="text-muted-foreground text-sm">Loading chart...</p>
+            )}
+
+            {data.length > 0 && (
+              <div className="h-[320px] w-full pt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      dataKey="amount"
+                      data={data}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={110}
+                      label={({ categoryName }) => categoryName}
+                      labelLine={false}
+                      isAnimationActive={true}
+                    >
+                      {data.map((_, idx) => (
+                        <Cell key={idx} fill={COLORS[idx % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+  formatter={(value: number) => [`₹${value}`, "Amount"]}
+  contentStyle={{
+    borderRadius: "8px",
+    borderColor: "#ccc",
+    backgroundColor: "var(--tooltip-bg)",
+    color: "var(--tooltip-color)",
+  }}
+/>
+                  </Tooltip>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+    </Layout>
+  );
+}
