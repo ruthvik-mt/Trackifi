@@ -20,13 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        // ROLE_ prefix required by Spring Security
-        String roleName = "ROLE_" + user.getRole().name();
-
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword())
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority(roleName)))
-                .build();
+        return user; // ✅ Use your custom User object that handles isEnabled() via emailVerified
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
@@ -14,4 +15,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     // Fetch a specific category by its ID (Optional to handle not found)
     Optional<Category> findById(Long categoryId);
+
+    int countByUserId(UUID userId);
 }

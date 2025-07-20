@@ -34,17 +34,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    /**
-     * Return role as authority (e.g., ROLE_USER, ROLE_ADMIN)
-     */
+    @Column(nullable = false)
+    private boolean emailVerified = false;
+
+    // ✅ Add this block to handle cascade delete for VerificationToken
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private VerificationToken verificationToken;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(role); // Role must implement GrantedAuthority
+        return Collections.singleton(role);
     }
 
-    /**
-     * Spring Security needs these for authentication checks
-     */
     @Override public String getUsername() { return email; }
 
     @Override public boolean isAccountNonExpired() { return true; }
@@ -53,5 +54,7 @@ public class User implements UserDetails {
 
     @Override public boolean isCredentialsNonExpired() { return true; }
 
-    @Override public boolean isEnabled() { return true; }
+    @Override public boolean isEnabled() {
+        return emailVerified;
+    }
 }

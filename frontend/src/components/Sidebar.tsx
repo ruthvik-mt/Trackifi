@@ -55,8 +55,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }: SidebarProp
             {[
               { to: "/dashboard", label: "Home" },
               { to: "/categories", label: "Categories" },
-              { to: "/transactions", label: "Transactions" },
               { to: "/budgets", label: "Budgets" },
+              { to: "/transactions", label: "Transactions" },
             ].map(({ to, label }) => (
               <Link
                 key={to}

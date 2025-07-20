@@ -113,53 +113,60 @@ export default function BudgetComparison() {
 
           {/* Chart */}
           {!loading && data.length > 0 && (
-            <div className="h-[400px] w-full rounded-xl border bg-gradient-to-br from-blue-50 to-white dark:from-background dark:to-card p-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
-                  <XAxis dataKey="categoryName" />
-                  <YAxis />
-                  <Tooltip
-                    cursor={{ fill: "transparent" }}
-                    formatter={(value: number, key) => [`₹${value}`, key]}
-                    contentStyle={{
-                      borderRadius: "8px",
-                      borderColor: "#ccc",
-                      backgroundColor: "var(--tooltip-bg)",
-                      color: "var(--tooltip-color)",
-                    }}
-                  />
-                  <Legend />
-
-                  <Bar
-                    dataKey="actual"
-                    name="Actual"
-                    fill="url(#actualGradient)"
-                    radius={[6, 6, 0, 0]}
+            <div className="w-full overflow-x-auto">
+              <div className="min-w-[700px] h-[400px] rounded-xl border bg-gradient-to-br from-blue-50 to-white dark:from-background dark:to-card p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={data}
+                    margin={{ top: 20, right: 30, left: 10, bottom: 50 }}
+                    barGap={8}
+                    barCategoryGap={data.length > 8 ? 10 : 30}
                   >
-                    <LabelList dataKey="actual" position="top" />
-                  </Bar>
+                    <XAxis dataKey="categoryName" />
+                    <YAxis />
+                    <Tooltip
+                      cursor={{ fill: "transparent" }}
+                      formatter={(value: number, key) => [`₹${value}`, key]}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        borderColor: "#ccc",
+                        backgroundColor: "var(--tooltip-bg)",
+                        color: "var(--tooltip-color)",
+                      }}
+                    />
+                    <Legend />
 
-                  <Bar
-                    dataKey="budget"
-                    name="Budget"
-                    fill="url(#budgetGradient)"
-                    radius={[6, 6, 0, 0]}
-                  >
-                    <LabelList dataKey="budget" position="top" />
-                  </Bar>
+                    <Bar
+                      dataKey="actual"
+                      name="Actual"
+                      fill="url(#actualGradient)"
+                      radius={[6, 6, 0, 0]}
+                    >
+                      <LabelList dataKey="actual" position="top" />
+                    </Bar>
 
-                  <defs>
-                    <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="#38bdf8" stopOpacity={0.8} />
-                    </linearGradient>
-                    <linearGradient id="budgetGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#9333ea" stopOpacity={0.9} />
-                      <stop offset="100%" stopColor="#c084fc" stopOpacity={0.8} />
-                    </linearGradient>
-                  </defs>
-                </BarChart>
-              </ResponsiveContainer>
+                    <Bar
+                      dataKey="budget"
+                      name="Budget"
+                      fill="url(#budgetGradient)"
+                      radius={[6, 6, 0, 0]}
+                    >
+                      <LabelList dataKey="budget" position="top" />
+                    </Bar>
+
+                    <defs>
+                      <linearGradient id="actualGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.9} />
+                        <stop offset="100%" stopColor="#38bdf8" stopOpacity={0.8} />
+                      </linearGradient>
+                      <linearGradient id="budgetGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#9333ea" stopOpacity={0.9} />
+                        <stop offset="100%" stopColor="#c084fc" stopOpacity={0.8} />
+                      </linearGradient>
+                    </defs>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
 

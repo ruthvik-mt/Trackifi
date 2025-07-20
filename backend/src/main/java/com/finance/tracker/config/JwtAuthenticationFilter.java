@@ -23,8 +23,8 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;   // used for validation
-    private final UserRepository userRepository;           // used to inject full User entity
+    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -32,41 +32,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);          // remove "Bearer "
-        String username = jwtService.extractUsername(token);
+        final String jwtToken = authHeader.substring(7);
+        final String email = jwtService.extractUsername(jwtToken);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
 
-            // 1️⃣  Load UserDetails for token validation
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {
+                User user = userRepository.findByEmail(email).orElseThrow();
 
-            // 2️⃣  Validate the token
-            if (jwtService.isTokenValid(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                user,                          // Inject full User object
+                                null,
+                                user.getAuthorities()          // Ensure User implements UserDetails
+                        );
 
-                // 3️⃣  Load the *full* User entity to inject into controllers
-                User user = userRepository.findByEmail(username).orElse(null);
-
-                if (user != null) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(
-                                    user,                    // principal = User entity
-                                    null,
-                                    user.getAuthorities()    // roles/authorities
-                            );
-
-                    authToken.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 

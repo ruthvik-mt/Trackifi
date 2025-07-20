@@ -5,6 +5,8 @@ import com.finance.tracker.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,4 +26,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     // Paginated fetch for a user's transactions
     Page<Transaction> findAllByUser(User user, Pageable pageable);
 
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.user.id = :userId")
+    double sumAmountByUserId(@Param("userId") UUID userId);
+
+    // ✅ Corrected version using native SQL for date grouping
+    @Query(
+            value = "SELECT DATE(t.date) AS day, SUM(t.amount) AS total " +
+                    "FROM transaction t " +
+                    "WHERE t.user_id = :userId " +
+                    "GROUP BY DATE(t.date) " +
+                    "ORDER BY day",
+            nativeQuery = true
+    )
+    List<Object[]> sumByDate(@Param("userId") UUID userId);
 }

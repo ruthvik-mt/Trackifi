@@ -55,13 +55,12 @@ export default function LandingPage() {
 
       {/* ────────────── Hero Section ────────────── */}
       <motion.section
-  id="hero"
-  className="text-center px-6 py-24 max-w-4xl mx-auto mb-32" // ← Add mb-32 or more
-  initial={{ opacity: 0, y: 30 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6 }}
->
-
+        id="hero"
+        className="text-center px-6 py-24 max-w-4xl mx-auto"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
         <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-primary">
   Track. Plan. Thrive. Welcome to Smarter Finance
 </h1>

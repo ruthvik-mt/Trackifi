@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     // ✅ Checks if a user with the given email already exists
     boolean existsByEmail(String email);
+
+    // ✅ Fetch only verified user for login
+    Optional<User> findByEmailAndEmailVerifiedTrue(String email);
 }

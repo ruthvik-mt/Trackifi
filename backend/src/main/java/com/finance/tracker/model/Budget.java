@@ -36,6 +36,8 @@ public class Budget {
     private Category category;
 
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE) // ✅ VERY IMPORTANT
     private User user;
 }

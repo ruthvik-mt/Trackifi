@@ -26,16 +26,18 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/me").authenticated()
-                        .requestMatchers("/api/categories/**").authenticated()
-                        .requestMatchers("/api/transactions/**").authenticated()
-                        .requestMatchers("/api/budgets/**").authenticated()
-                        .requestMatchers("/api/insights/**").authenticated()
-                        .anyRequest().authenticated()
+                        .requestMatchers(
+                                "/api/auth/**",             // Allow auth endpoints
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+                        .requestMatchers("/api/**").authenticated() // Protect all other APIs
+                        .anyRequest().permitAll() // Allow static or fallback frontend resources if any
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()) // ✅ Register it here
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -48,8 +50,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // ✅ Needed to load user by email
-        authProvider.setPasswordEncoder(passwordEncoder());     // ✅ Needed to decode bcrypt
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 

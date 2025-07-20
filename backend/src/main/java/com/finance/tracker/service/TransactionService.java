@@ -18,10 +18,16 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final BudgetAlertService budgetAlertService; // ✅ Injected
 
     /** Create a new transaction for a user. */
     public Transaction createTransaction(Transaction transaction) {
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // ✅ Check for budget threshold after saving
+        budgetAlertService.checkAndNotify(savedTransaction.getUser());
+
+        return savedTransaction;
     }
 
     /** Get all transactions for a user, sorted by most recent date. */
@@ -48,7 +54,12 @@ public class TransactionService {
         existing.setDate(updatedTransaction.getDate());
         existing.setCategory(updatedTransaction.getCategory());
 
-        return transactionRepository.save(existing);
+        Transaction saved = transactionRepository.save(existing);
+
+        // ✅ Optionally recheck budget after update
+        budgetAlertService.checkAndNotify(user);
+
+        return saved;
     }
 
     /** Delete a transaction if the user owns it. */
@@ -65,6 +76,9 @@ public class TransactionService {
         transaction.getCategory().getName();
 
         transactionRepository.delete(transaction);
+
+        // ✅ Recheck budget (optional)
+        budgetAlertService.checkAndNotify(user);
     }
 
     /** Fetch transactions for a specific year-month range. */

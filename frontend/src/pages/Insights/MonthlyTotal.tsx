@@ -110,41 +110,47 @@ export default function MonthlyTotalPage() {
                 Visual Breakdown
               </CardTitle>
             </CardHeader>
-            <CardContent className="h-[300px]">
+            <CardContent className="h-[300px] w-full overflow-x-auto">
               {loading && !error ? (
                 <p className="text-sm text-muted-foreground">Loading chart...</p>
               ) : total !== null ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[{ month: format(selectedDate, "MMMM yyyy"), total }]}
-                  >
-                    <XAxis dataKey="month" stroke="#8884d8" />
-                    <YAxis domain={[0, "dataMax + 100"]} />
-                    <Tooltip
-                      cursor={{ fill: "transparent" }}
-                      formatter={(value: number) => [`₹${value}`, "Total"]}
-                      contentStyle={{
-                        borderRadius: "8px",
-                        borderColor: "#ccc",
-                        backgroundColor: "var(--tooltip-bg)",
-                        color: "var(--tooltip-color)",
-                      }}
-                    />
-                    <Bar
-                      dataKey="total"
-                      fill="url(#barColor)"
-                      radius={[6, 6, 0, 0]}
+                <div className="min-w-[500px] h-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={[{ month: format(selectedDate, "MMMM yyyy"), total }]}
+                      margin={{ top: 20, right: 30, left: 10, bottom: 40 }}
                     >
-                      <LabelList dataKey="total" position="top" />
-                      <defs>
-                        <linearGradient id="barColor" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
-                          <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8} />
-                        </linearGradient>
-                      </defs>
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                      <XAxis dataKey="month" stroke="#8884d8" />
+                      <YAxis
+                        domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                        tickFormatter={(value) => `${value}`}
+                      />
+                      <Tooltip
+                        cursor={{ fill: "transparent" }}
+                        formatter={(value: number) => [`₹${value}`, "Total"]}
+                        contentStyle={{
+                          borderRadius: "8px",
+                          borderColor: "#ccc",
+                          backgroundColor: "var(--tooltip-bg)",
+                          color: "var(--tooltip-color)",
+                        }}
+                      />
+                      <Bar
+                        dataKey="total"
+                        fill="url(#barColor)"
+                        radius={[6, 6, 0, 0]}
+                      >
+                        <LabelList dataKey="total" position="top" />
+                        <defs>
+                          <linearGradient id="barColor" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
+                            <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.8} />
+                          </linearGradient>
+                        </defs>
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               ) : (
                 <p className="text-sm text-muted-foreground">No data found.</p>
               )}

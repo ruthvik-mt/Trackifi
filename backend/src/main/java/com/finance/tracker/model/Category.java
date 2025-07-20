@@ -2,6 +2,8 @@ package com.finance.tracker.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.UUID;
 
@@ -19,5 +21,8 @@ public class Category {
     private String name;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE) // ✅ this line is key
     private User user;
+
 }
