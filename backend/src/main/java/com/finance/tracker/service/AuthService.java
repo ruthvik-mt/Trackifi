@@ -4,6 +4,7 @@ import com.finance.tracker.dto.*;
 import com.finance.tracker.model.*;
 import com.finance.tracker.repository.*;
 import com.finance.tracker.security.JwtService;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +27,7 @@ public class AuthService {
     private final UserDetailsService userDetailsService;
     private final EmailService emailService;
 
-    /** User Registration with Email Verification */
+    /** Register User */
     public AuthenticationResponse register(RegisterRequest request) {
         if (request.getEmail() == null || request.getEmail().isBlank()
                 || request.getPassword() == null || request.getPassword().isBlank()
@@ -48,16 +49,15 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Generate verification token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
                 .token(token)
                 .user(user)
                 .expiryDate(LocalDateTime.now().plusHours(24))
                 .build();
+
         tokenRepository.save(verificationToken);
 
-        // Send email
         String verifyUrl = "http://localhost:8080/api/auth/verify?token=" + token;
         emailService.sendSimpleEmail(
                 user.getEmail(),
@@ -68,25 +68,7 @@ public class AuthService {
         return new AuthenticationResponse("Registration successful. Please verify your email.");
     }
 
-    /** Email verification handler */
-    public String verifyEmail(String token) {
-        VerificationToken verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid verification token."));
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Verification token has expired.");
-        }
-
-        User user = verificationToken.getUser();
-        user.setEmailVerified(true);
-        userRepository.save(user);
-
-        tokenRepository.delete(verificationToken); // Optional: remove token after use
-
-        return "Email verified successfully. You can now log in.";
-    }
-
-    /** Login - only if email is verified */
+    /** Login */
     public AuthenticationResponse login(AuthenticationRequest request) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -103,6 +85,34 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(user);
-        return new AuthenticationResponse(token);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        return new AuthenticationResponse(token, refreshToken, "Login successful.");
+    }
+
+    /** Refresh Access Token using Refresh Token */
+    public AuthenticationResponse refreshToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new IllegalArgumentException("Refresh token is required.");
+        }
+
+        String email;
+        try {
+            email = jwtService.extractUsername(refreshToken);
+        } catch (JwtException e) {
+            throw new RuntimeException("Invalid refresh token.");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        if (!jwtService.isTokenValid(refreshToken, user)) {
+            throw new RuntimeException("Refresh token is invalid or expired.");
+        }
+
+        String newAccessToken = jwtService.generateToken(user);
+        String newRefreshToken = jwtService.generateRefreshToken(user); // Optional: rotate refresh token
+
+        return new AuthenticationResponse(newAccessToken, newRefreshToken, "Token refreshed.");
     }
 }

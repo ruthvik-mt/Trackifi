@@ -11,12 +11,20 @@
 // export default ProtectedRoute;
 
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth"; // ✅ Correct path
-import { JSX } from "react/jsx-runtime";
+import { useAuth } from "../hooks/useAuth";
+import { JSX } from "react";
 
-export default function ProtectedRoute({ children }: { children: JSX.Element }) {
+interface ProtectedRouteProps {
+  children: JSX.Element;
+}
+
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { token } = useAuth();
 
-  if (!token) return <Navigate to="/" replace />;
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 }
+
