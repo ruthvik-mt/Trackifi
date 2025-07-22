@@ -18,8 +18,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       {/* ────────────── Header ────────────── */}
       <header className="sticky top-0 z-10 h-16 bg-card text-card-foreground shadow-sm flex items-center justify-between px-6">
-        <a href="#hero" className="text-xl font-bold text-primary">Trackifi</a>
-
+        <a href="#hero" className="flex items-center gap-2 text-xl font-bold text-primary">
+  <img src="/logo.png" alt="Trackifi Logo" className="w-8 h-8" />
+  Trackifi
+</a>
         <nav className="flex items-center gap-4">
           <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Features</a>
           <a href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors">Testimonials</a>
@@ -104,12 +106,12 @@ export default function LandingPage() {
             {
               icon: "📊",
               title: "Perfect Control",
-              desc: "Track cash, bank accounts, wallets & crypto all in one place.",
+              desc: "Track your finances manually the simple way, with Trackifi",
             },
             {
               icon: "📈",
               title: "Smart Insights",
-              desc: "Visualize income and spending with real-time analytics.",
+              desc: "Visualize the spending with real-time analytics.",
             },
             {
               icon: "💡",
@@ -231,12 +233,15 @@ export default function LandingPage() {
       Join Trackifi today and start your journey toward smarter money habits.
     </p>
     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-      <Link to="/contact">
-        <button className="px-6 py-3 text-sm font-semibold bg-muted text-foreground border border-border rounded-md hover:bg-muted/80 transition-colors">
-          Contact Us
-        </button>
-      </Link>
-    </div>
+  <a
+    href="https://mail.google.com/mail/?view=cm&to=trackifi7@gmail.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="px-6 py-3 text-sm font-semibold bg-muted text-foreground border border-border rounded-md hover:bg-muted/80 transition-colors inline-block text-center"
+  >
+    Contact Us
+  </a>
+</div>
   </motion.div>
 </motion.section>
 
