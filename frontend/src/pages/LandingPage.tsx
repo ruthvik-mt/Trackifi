@@ -18,10 +18,24 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background text-foreground">
       {/* ────────────── Header ────────────── */}
       <header className="sticky top-0 z-10 h-16 bg-card text-card-foreground shadow-sm flex items-center justify-between px-6">
-        <a href="#hero" className="flex items-center gap-2 text-xl font-bold text-primary">
-  <img src="/logo.png" alt="Trackifi Logo" className="w-8 h-8" />
+        <a href="#hero" className="flex items-center gap-0 text-xl font-bold text-primary">
+  {/* Light mode logo */}
+  <img
+    src="/logo-light.png"
+    alt="Trackifi Logo Light"
+    className="w-8 h-8 block dark:hidden"
+  />
+  
+  {/* Dark mode logo */}
+  <img
+    src="/logo-dark.png"
+    alt="Trackifi Logo Dark"
+    className="w-8 h-8 hidden dark:block"
+  />
+
   Trackifi
 </a>
+
         <nav className="flex items-center gap-4">
           <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">Features</a>
           <a href="#testimonials" className="text-sm font-medium hover:text-primary transition-colors">Testimonials</a>
@@ -121,7 +135,7 @@ export default function LandingPage() {
           ].map(({ icon, title, desc }, index) => (
             <motion.div
               key={title}
-              className="bg-white dark:bg-zinc-900 text-zinc-800 dark:text-white border border-border p-8 rounded-2xl shadow-md hover:shadow-xl transition-transform"
+              className="p-8 rounded-2xl shadow-md hover:shadow-xl transition-transform"
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, amount: 0.3 }}
