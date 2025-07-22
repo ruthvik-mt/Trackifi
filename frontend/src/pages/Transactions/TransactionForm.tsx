@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Transaction } from "../../types/Transaction";
 import { getCategories } from "../../api/category";
 import { Category } from "../../types/Category";
-import { DatePicker } from "@/components/DatePicker"; // ✅ correct picker
+import { DatePicker } from "@/components/DatePicker";
 
 interface Props {
   onSubmit: (tx: Omit<Transaction, "id">) => void;
@@ -12,6 +12,14 @@ interface Props {
 
 type FormState = Omit<Transaction, "id" | "date"> & {
   date: Date;
+};
+
+// Helper to format date in YYYY-MM-DD without time
+const formatLocalDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
 
 export default function TransactionForm({ onSubmit, initial, onCancel }: Props) {
@@ -31,7 +39,7 @@ export default function TransactionForm({ onSubmit, initial, onCancel }: Props) 
         categoryId: initial.categoryId,
         amount: initial.amount,
         description: initial.description,
-        date: new Date(initial.date), // convert string to Date
+        date: new Date(initial.date), // Parse to Date object
       });
     }
   }, [initial]);
@@ -51,7 +59,7 @@ export default function TransactionForm({ onSubmit, initial, onCancel }: Props) 
 
     const formatted: Omit<Transaction, "id"> = {
       ...form,
-      date: form.date.toISOString().slice(0, 10), // format date
+      date: formatLocalDate(form.date), // Convert Date to 'YYYY-MM-DD'
     };
 
     onSubmit(formatted);

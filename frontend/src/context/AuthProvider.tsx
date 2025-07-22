@@ -37,6 +37,7 @@
 import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import axios from "../axios";
+import { useNavigate } from "react-router-dom";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -44,6 +45,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (token) {
@@ -54,26 +56,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [token]);
 
   const login = async (email: string, password: string): Promise<void> => {
-    const response = await axios.post("/api/auth/login", { email, password });
+    try {
+      const response = await axios.post("/api/auth/login", { email, password });
 
-    const jwt = response.data.token as string;
-    const refreshToken = response.data.refreshToken as string;
+      const jwt = response.data.accessToken; // ✅ Updated to match your Postman response
+      const refreshToken = response.data.refreshToken;
 
-    setToken(jwt);
-    localStorage.setItem("token", jwt);
-    localStorage.setItem("refreshToken", refreshToken);
+      if (!jwt || jwt.split(".").length !== 3) {
+        console.error("Invalid JWT received.");
+        throw new Error("Invalid token format received.");
+      }
 
-    axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
+      setToken(jwt);
+      localStorage.setItem("token", jwt);
+      localStorage.setItem("refreshToken", refreshToken);
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
+
+      // ✅ Navigate without full reload
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Login failed", err);
+    }
   };
 
   const logout = (): void => {
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
-
     delete axios.defaults.headers.common["Authorization"];
-
-    window.location.href = "/auth/login";
+    navigate("/auth/login");
   };
 
   return (

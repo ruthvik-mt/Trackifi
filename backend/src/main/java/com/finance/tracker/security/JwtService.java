@@ -23,7 +23,7 @@ public class JwtService {
     @Value("${spring.security.jwt.expiration:86400000}") // 1 day
     private long jwtExpiration;
 
-    @Value("${spring.security.jwt.refresh-expiration:2592000000}") // 7 days
+    @Value("${spring.security.jwt.refresh-expiration:2592000000}") // 30 days
     private long refreshExpiration;
 
     private Key key;
@@ -59,8 +59,8 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {
-            final String username = extractUsername(token);
-            return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+            String username = extractUsername(token);
+            return username != null && username.equals(userDetails.getUsername()) && !isTokenExpired(token);
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
             return false;
@@ -68,14 +68,28 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return parseToken(token).getBody().getSubject();
+        try {
+            return parseToken(token).getBody().getSubject();
+        } catch (JwtException e) {
+            log.warn("Failed to extract username from token: {}", e.getMessage());
+            return null;
+        }
     }
 
     public boolean isTokenExpired(String token) {
-        return parseToken(token).getBody().getExpiration().before(new Date());
+        try {
+            return parseToken(token).getBody().getExpiration().before(new Date());
+        } catch (JwtException e) {
+            log.warn("Failed to check token expiration: {}", e.getMessage());
+            return true; // Treat as expired if invalid
+        }
     }
 
     public Jws<Claims> parseToken(String token) {
+        if (token == null || token.chars().filter(ch -> ch == '.').count() != 2) {
+            throw new MalformedJwtException("Invalid JWT format: must contain exactly 2 periods");
+        }
+
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
