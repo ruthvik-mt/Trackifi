@@ -40,9 +40,9 @@ instance.interceptors.request.use(
 
       if (isValidJwt(token)) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log("✅ Attached valid token to request");
+        console.log("Attached valid token to request");
       } else {
-        console.warn("🚫 Invalid or missing token. Skipping Authorization header.");
+        console.warn("Invalid or missing token. Skipping Authorization header.");
       }
     }
 
@@ -51,7 +51,7 @@ instance.interceptors.request.use(
     return config;
   },
   (error: AxiosError) => {
-    console.error("❌ Request interceptor error:", error.message);
+    console.error("Request interceptor error:", error.message);
     return Promise.reject(error);
   }
 );
