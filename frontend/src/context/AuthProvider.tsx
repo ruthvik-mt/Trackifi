@@ -57,9 +57,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string): Promise<void> => {
     try {
-      const response = await axios.post("/api/auth/login", { email, password });
+      const response = await axios.post("/auth/login", { email, password });
 
-      const jwt = response.data.accessToken; // ✅ Updated to match your Postman response
+      const jwt = response.data.accessToken;
       const refreshToken = response.data.refreshToken;
 
       if (!jwt || jwt.split(".").length !== 3) {
@@ -70,10 +70,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(jwt);
       localStorage.setItem("token", jwt);
       localStorage.setItem("refreshToken", refreshToken);
-
       axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
 
-      // ✅ Navigate without full reload
       navigate("/dashboard");
     } catch (err) {
       console.error("Login failed", err);

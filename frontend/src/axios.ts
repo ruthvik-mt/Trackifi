@@ -21,26 +21,27 @@
 // src/api/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-// ✅ Base URL from Vite env
+// ✅ Axios instance using Vite env
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // for sending cookies
 });
 
-// ✅ JWT validation helper
+// ✅ Check for valid JWT
 const isValidJwt = (token: string | null): boolean => {
   return !!token && token.split(".").length === 3;
 };
 
-// ✅ Utility to check if URL is public (e.g., login/register)
+// ✅ Public route checker
 const isPublicRoute = (url?: string): boolean => {
   if (!url) return false;
   return url.includes("/auth/login") || url.includes("/auth/register");
 };
 
-// ✅ Request interceptor to attach token
+// ✅ Request Interceptor
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     if (typeof window !== "undefined") {
@@ -50,7 +51,6 @@ instance.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
         console.log("[Auth] ✔ Token attached to request");
       } else if (!isPublicRoute(config.url)) {
-        // Only warn if it's a protected route
         console.warn("[Auth] ⚠ No valid token found");
       }
     }
@@ -64,7 +64,7 @@ instance.interceptors.request.use(
   }
 );
 
-// ✅ Response interceptor (optional)
+// ✅ Response Interceptor
 instance.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
