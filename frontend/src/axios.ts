@@ -18,21 +18,23 @@
 
 // export default instance;
 
-import axios, { InternalAxiosRequestConfig, AxiosError } from "axios";
+// src/api/axios.ts
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
+// Create Axios instance with baseURL from Vite env
 const instance = axios.create({
-  baseURL: "", // Set your API base URL in `.env.local`
+  baseURL: "",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Helper: Validate if token is a proper JWT with 3 parts (2 dots)
+// JWT validation helper
 const isValidJwt = (token: string | null): boolean => {
   return !!token && token.split(".").length === 3;
 };
 
-// Interceptor to attach Authorization header
+// Request interceptor to attach token
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     if (typeof window !== "undefined") {
@@ -40,20 +42,31 @@ instance.interceptors.request.use(
 
       if (isValidJwt(token)) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log("Attached valid token to request");
+        console.log("[Auth] ✔ Token attached to request");
       } else {
-        console.warn("Invalid or missing token. Skipping Authorization header.");
+        console.warn("[Auth] ⚠ No valid token found");
       }
     }
 
-    // Optional debug logs
-    console.log(`➡️ ${config.method?.toUpperCase()} ${config.url}`);
+    console.log(`[Request] ➡ ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
   (error: AxiosError) => {
-    console.error("Request interceptor error:", error.message);
+    console.error("[Axios Request Error]:", error.message);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor (optional)
+instance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error: AxiosError) => {
+    console.error("[Axios Response Error]:", error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
 
 export default instance;
+
