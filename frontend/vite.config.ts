@@ -27,6 +27,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 
 export default defineConfig({
+  envDir: "./", // ✅ Add this line to explicitly tell Vite to load env files from root
   plugins: [
     react(),
     VitePWA({
@@ -84,4 +85,3 @@ export default defineConfig({
     }
   }
 });
-
