@@ -47,11 +47,15 @@ instance.interceptors.request.use(
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
 
-      if (isValidJwt(token)) {
-        config.headers.Authorization = `Bearer ${token}`;
-        console.log("[Auth] ✔ Token attached to request");
-      } else if (!isPublicRoute(config.url)) {
-        console.warn("[Auth] ⚠ No valid token found");
+      if (!isPublicRoute(config.url)) {
+        if (isValidJwt(token)) {
+          config.headers.set("Authorization", `Bearer ${token}`);
+          console.log("[Auth] ✔ Token attached to request");
+        } else {
+          console.warn("[Auth] ⚠ No valid token found");
+        }
+      } else {
+        console.log("[Auth] ⏭ Public route, no token attached");
       }
     }
 

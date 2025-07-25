@@ -1,30 +1,101 @@
-// import { useState, useEffect } from "react";
+// // import { useState, useEffect } from "react";
+// // import { AuthContext } from "./AuthContext";
+// // import axios from "../axios";
+
+// // export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+// //   const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
+
+// //   // Set Authorization header on load (if token exists)
+// //   useEffect(() => {
+// //     if (token) {
+// //       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+// //     }
+// //   }, [token]);
+
+// //   const login = async (email: string, password: string) => {
+// //     const res = await axios.post("/api/auth/login", { email, password });
+// //     const jwt = res.data.token;
+
+// //     setToken(jwt);
+// //     localStorage.setItem("token", jwt);
+// //     axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`; // ✅ set globally
+// //   };
+
+// //   const logout = () => {
+// //     setToken(null);
+// //     localStorage.removeItem("token");
+// //     delete axios.defaults.headers.common["Authorization"]; // ✅ remove on logout
+// //   };
+
+// //   return (
+// //     <AuthContext.Provider value={{ token, login, logout }}>
+// //       {children}
+// //     </AuthContext.Provider>
+// //   );
+// // };
+
+// import React, { useState, useEffect } from "react";
 // import { AuthContext } from "./AuthContext";
-// import axios from "../axios";
+// import axios from "../axios"; // Your custom axios instance
+// import { isAxiosError } from "axios"; // Import isAxiosError separately from axios package
+// import { useNavigate } from "react-router-dom";
 
-// export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+// interface AuthProviderProps {
+//   children: React.ReactNode;
+// }
+
+// interface LoginResponse {
+//   accessToken: string;
+//   refreshToken: string;
+// }
+
+// export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 //   const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
+//   const navigate = useNavigate();
 
-//   // Set Authorization header on load (if token exists)
 //   useEffect(() => {
 //     if (token) {
 //       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+//     } else {
+//       delete axios.defaults.headers.common["Authorization"];
 //     }
 //   }, [token]);
 
-//   const login = async (email: string, password: string) => {
-//     const res = await axios.post("/api/auth/login", { email, password });
-//     const jwt = res.data.token;
+//   const login = async (email: string, password: string): Promise<void> => {
+//     try {
+//       const response = await axios.post<LoginResponse>("/auth/login", { email, password });
 
-//     setToken(jwt);
-//     localStorage.setItem("token", jwt);
-//     axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`; // ✅ set globally
+//       const { accessToken, refreshToken } = response.data;
+
+//       if (!accessToken || accessToken.split(".").length !== 3) {
+//         throw new Error("Invalid token format received.");
+//       }
+
+//       setToken(accessToken);
+//       localStorage.setItem("token", accessToken);
+//       localStorage.setItem("refreshToken", refreshToken);
+
+//       axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+
+//       navigate("/dashboard");
+//     } catch (error: unknown) {
+//       if (isAxiosError(error) && error.response?.data?.message) {
+//         alert("Login failed: " + error.response.data.message);
+//       } else if (error instanceof Error) {
+//         alert("Login failed: " + error.message);
+//       } else {
+//         alert("Login failed: An unknown error occurred.");
+//       }
+//       console.error("Login failed:", error);
+//     }
 //   };
 
-//   const logout = () => {
+//   const logout = (): void => {
 //     setToken(null);
 //     localStorage.removeItem("token");
-//     delete axios.defaults.headers.common["Authorization"]; // ✅ remove on logout
+//     localStorage.removeItem("refreshToken");
+//     delete axios.defaults.headers.common["Authorization"];
+//     navigate("/auth/login");
 //   };
 
 //   return (
@@ -34,19 +105,21 @@
 //   );
 // };
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
+import { login as loginApi } from "../api/auth";
 import axios from "../axios";
-import { useNavigate } from "react-router-dom";
 
 interface AuthProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem("token"));
-  const navigate = useNavigate();
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem("authToken");
+  });
 
+  // ✅ Set or remove the Authorization header based on token
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -55,35 +128,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [token]);
 
-  const login = async (email: string, password: string): Promise<void> => {
+  // ✅ Login and store token in state & localStorage
+  const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post("/auth/login", { email, password });
+      const response = await loginApi({ email, password });
+      const token = response.token;
 
-      const jwt = response.data.accessToken;
-      const refreshToken = response.data.refreshToken;
-
-      if (!jwt || jwt.split(".").length !== 3) {
-        console.error("Invalid JWT received.");
-        throw new Error("Invalid token format received.");
-      }
-
-      setToken(jwt);
-      localStorage.setItem("token", jwt);
-      localStorage.setItem("refreshToken", refreshToken);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
-
-      navigate("/dashboard");
-    } catch (err) {
-      console.error("Login failed", err);
+      setToken(token);
+      localStorage.setItem("authToken", token);
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
     }
   };
 
-  const logout = (): void => {
+  // ✅ Logout: clear state and localStorage
+  const logout = () => {
     setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    delete axios.defaults.headers.common["Authorization"];
-    navigate("/auth/login");
+    localStorage.removeItem("authToken");
   };
 
   return (

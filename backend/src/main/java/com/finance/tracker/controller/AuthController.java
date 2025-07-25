@@ -6,10 +6,10 @@ import com.finance.tracker.dto.RegisterRequest;
 import com.finance.tracker.dto.TokenRefreshRequest;
 import com.finance.tracker.service.AuthService;
 import com.finance.tracker.service.VerificationTokenService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,12 +20,12 @@ public class AuthController {
     private final VerificationTokenService tokenService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
 
@@ -39,7 +39,6 @@ public class AuthController {
         }
     }
 
-    // ✅ Updated refresh endpoint using @RequestBody (more RESTful)
     @PostMapping("/refresh")
     public ResponseEntity<AuthenticationResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
         return ResponseEntity.ok(authService.refreshToken(request.getRefreshToken()));
