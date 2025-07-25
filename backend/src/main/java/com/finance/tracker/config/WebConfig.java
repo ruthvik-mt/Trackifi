@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.frontend.url}") // Make sure this matches your properties file
+    @Value("${frontend.url}") // Make sure this matches your properties file
     private String frontendUrl;
 
     @Override
