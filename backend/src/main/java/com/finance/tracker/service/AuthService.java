@@ -6,13 +6,14 @@ import com.finance.tracker.repository.*;
 import com.finance.tracker.security.JwtService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +27,9 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final UserDetailsService userDetailsService;
     private final EmailService emailService;
+
+    @Value("${frontend.url}") // e.g. https://trackifi.onrender.com
+    private String baseUrl;
 
     /** Register User */
     public AuthenticationResponse register(RegisterRequest request) {
@@ -58,7 +62,9 @@ public class AuthService {
 
         tokenRepository.save(verificationToken);
 
-        String verifyUrl = "http://localhost:8080/api/auth/verify?token=" + token;
+        // 🔁 Updated to work in production (not localhost)
+        String verifyUrl = baseUrl + "/api/auth/verify?token=" + token;
+
         emailService.sendSimpleEmail(
                 user.getEmail(),
                 "Verify your email",
@@ -66,6 +72,29 @@ public class AuthService {
         );
 
         return new AuthenticationResponse("Registration successful. Please verify your email.");
+    }
+
+    /** Verify Email */
+    public String verifyToken(String token) {
+        Optional<VerificationToken> optionalToken = tokenRepository.findByToken(token);
+
+        if (optionalToken.isEmpty()) {
+            return "Invalid or expired verification token.";
+        }
+
+        VerificationToken verificationToken = optionalToken.get();
+
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            tokenRepository.delete(verificationToken);
+            return "Verification token has expired.";
+        }
+
+        User user = verificationToken.getUser();
+        user.setEmailVerified(true);
+        userRepository.save(user);
+        tokenRepository.delete(verificationToken);
+
+        return "Email verified successfully.";
     }
 
     /** Login */
@@ -111,7 +140,7 @@ public class AuthService {
         }
 
         String newAccessToken = jwtService.generateToken(user);
-        String newRefreshToken = jwtService.generateRefreshToken(user); // Optional: rotate refresh token
+        String newRefreshToken = jwtService.generateRefreshToken(user);
 
         return new AuthenticationResponse(newAccessToken, newRefreshToken, "Token refreshed.");
     }
