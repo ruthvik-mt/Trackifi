@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,14 +29,15 @@ public class AuthService {
     private final UserDetailsService userDetailsService;
     private final EmailService emailService;
 
-    @Value("${frontend.url}") // e.g. https://trackifi.onrender.com
+    @Value("${frontend.url}")
     private String baseUrl;
 
-    /** Register User */
+    /**
+     * Registers a new user and sends a verification email.
+     */
+    @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
-        if (request.getEmail() == null || request.getEmail().isBlank()
-                || request.getPassword() == null || request.getPassword().isBlank()
-                || request.getFullName() == null || request.getFullName().isBlank()) {
+        if (isNullOrEmpty(request.getEmail()) || isNullOrEmpty(request.getPassword()) || isNullOrEmpty(request.getFullName())) {
             throw new IllegalArgumentException("Email, password, and full name must not be blank.");
         }
 
@@ -62,7 +64,6 @@ public class AuthService {
 
         tokenRepository.save(verificationToken);
 
-        // 🔁 Updated to work in production (not localhost)
         String verifyUrl = baseUrl + "/api/auth/verify?token=" + token;
 
         emailService.sendSimpleEmail(
@@ -74,7 +75,10 @@ public class AuthService {
         return new AuthenticationResponse("Registration successful. Please verify your email.");
     }
 
-    /** Verify Email */
+    /**
+     * Verifies the token sent via email for email confirmation.
+     */
+    @Transactional
     public String verifyToken(String token) {
         Optional<VerificationToken> optionalToken = tokenRepository.findByToken(token);
 
@@ -97,7 +101,9 @@ public class AuthService {
         return "Email verified successfully.";
     }
 
-    /** Login */
+    /**
+     * Authenticates the user and returns access and refresh tokens.
+     */
     public AuthenticationResponse login(AuthenticationRequest request) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -107,7 +113,7 @@ public class AuthService {
         );
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found."));
 
         if (!user.isEmailVerified()) {
             throw new RuntimeException("Email not verified. Please check your inbox.");
@@ -119,9 +125,11 @@ public class AuthService {
         return new AuthenticationResponse(token, refreshToken, "Login successful.");
     }
 
-    /** Refresh Access Token using Refresh Token */
+    /**
+     * Refreshes the access token using a valid refresh token.
+     */
     public AuthenticationResponse refreshToken(String refreshToken) {
-        if (refreshToken == null || refreshToken.isBlank()) {
+        if (isNullOrEmpty(refreshToken)) {
             throw new IllegalArgumentException("Refresh token is required.");
         }
 
@@ -143,5 +151,9 @@ public class AuthService {
         String newRefreshToken = jwtService.generateRefreshToken(user);
 
         return new AuthenticationResponse(newAccessToken, newRefreshToken, "Token refreshed.");
+    }
+
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 }

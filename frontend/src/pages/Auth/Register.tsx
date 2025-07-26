@@ -114,8 +114,8 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import axiosInstance from "../../axios"; // custom axios instance
-import axios from "axios"; // original axios for type-checking
+import axiosInstance from "../../axios";
+import { AxiosError } from "axios";
 import FormInput from "../../components/FormInput";
 import ThemeToggleButton from "../../components/ThemeToggleButton";
 import { motion } from "framer-motion";
@@ -139,7 +139,7 @@ export default function Register() {
     return conditions.filter(Boolean).length >= 4;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setSuccess(false);
@@ -161,13 +161,10 @@ export default function Register() {
       setFullName("");
       setEmail("");
       setPassword("");
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        const serverMessage = err.response?.data?.message;
-        setError(serverMessage || "Registration failed. Please try again.");
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      const serverMessage = error.response?.data?.message;
+      setError(serverMessage || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

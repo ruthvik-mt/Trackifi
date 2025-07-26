@@ -9,17 +9,21 @@ import MonthlyTotal from "./pages/Insights/MonthlyTotal";
 import CategoryBreakdown from "./pages/Insights/CategoryBreakdown";
 import BudgetComparison from "./pages/Insights/BudgetComparison";
 import ProtectedRoute from "./components/ProtectedRoute";
-import LandingPage from "./pages/LandingPage"; // ✅ Add this import
+import LandingPage from "./pages/LandingPage";
+import EmailVerificationPage from "./pages/Auth/VerifyEmail"; // ✅ Added
 
 export default function App() {
   return (
     <Routes>
       {/* Landing Page */}
-      <Route path="/" element={<LandingPage />} /> {/* ✅ New route */}
+      <Route path="/" element={<LandingPage />} />
 
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* ✅ Email Verification Route */}
+      <Route path="/verify-email" element={<EmailVerificationPage />} />
 
       {/* Protected Routes */}
       <Route
@@ -80,7 +84,7 @@ export default function App() {
       />
 
       {/* Fallback Route */}
-      <Route path="*" element={<Navigate to="/" />} /> {/* ✅ Updated from "/login" to "/" */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }

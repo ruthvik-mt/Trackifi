@@ -17,15 +17,17 @@ public class VerificationTokenService {
     private final UserRepository userRepository;
 
     public boolean verifyToken(String token) {
-        VerificationToken verificationToken = tokenRepository.findByToken(token).orElse(null);
-        if (verificationToken == null || verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            return false;
-        }
+        return tokenRepository.findByToken(token)
+                .filter(verificationToken -> verificationToken.getExpiryDate().isAfter(LocalDateTime.now()))
+                .map(verificationToken -> {
+                    User user = verificationToken.getUser();
+                    if (user == null) return false;
 
-        User user = verificationToken.getUser();
-        user.setEmailVerified(true);
-        userRepository.save(user);
-        tokenRepository.delete(verificationToken);
-        return true;
+                    user.setEmailVerified(true);
+                    userRepository.save(user);
+                    tokenRepository.delete(verificationToken);
+                    return true;
+                })
+                .orElse(false);
     }
 }

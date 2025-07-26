@@ -24,8 +24,8 @@ public class VerificationToken {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id", referencedColumnName = "id", unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-
 
     @Column(nullable = false)
     private LocalDateTime expiryDate;
