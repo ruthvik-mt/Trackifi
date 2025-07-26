@@ -18,17 +18,24 @@ public class VerificationTokenService {
     private final UserRepository userRepository;
 
     public boolean verifyToken(String token) {
+        System.out.println("Received token: " + token);  // 👈 Debug log
         return tokenRepository.findByToken(token)
-                .filter(verificationToken -> verificationToken.getExpiryDate().isAfter(LocalDateTime.now()))
+                .filter(verificationToken -> {
+                    System.out.println("Found token: " + verificationToken.getToken()); // 👈 Debug log
+                    return verificationToken.getExpiryDate().isAfter(LocalDateTime.now());
+                })
                 .map(verificationToken -> {
                     User user = verificationToken.getUser();
-                    if (user == null) return false;
+                    if (user == null) {
+                        System.out.println("No user found for token");
+                        return false;
+                    }
 
-                    user.setEmailVerified(true);                // ✅ Update user
-                    userRepository.save(user);                  // ✅ Save updated user
-                    tokenRepository.delete(verificationToken);  // ✅ Delete used token
+                    user.setEmailVerified(true);
+                    userRepository.save(user);
+                    tokenRepository.delete(verificationToken);
                     return true;
                 })
-                .orElse(false); // Invalid or expired token
+                .orElse(false);
     }
 }
