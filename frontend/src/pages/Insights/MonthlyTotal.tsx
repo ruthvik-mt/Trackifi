@@ -39,8 +39,7 @@ export default function MonthlyTotalPage() {
   useEffect(() => {
     setError("");
     setLoading(true);
-    axios
-      .get("/insights/monthly-total", { params: { month } })
+    axios.get("/api/insights/monthly-total", { params: { month } })
       .then((res) => {
         console.log("API Monthly Total response:", res.data);
         setTotal(res.data);

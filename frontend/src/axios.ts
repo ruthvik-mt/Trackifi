@@ -22,34 +22,37 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL, // e.g., https://trackifi.onrender.com
   headers: {
     "Content-Type": "application/json",
   },
-   withCredentials: true,
+  withCredentials: true, // ✅ Required for cookies to be sent (e.g., refresh token)
 });
 
+// ✅ Basic token format check
 const isValidJwt = (token: string | null): boolean => {
   return !!token && token.split(".").length === 3;
 };
 
+// ✅ Check if the route is public (no auth header needed)
 const isPublicRoute = (url?: string): boolean => {
   if (!url) return false;
   return url.includes("/auth/login") || url.includes("/auth/register");
 };
 
+// ✅ Prefix all internal calls with `/api` (backend expects it)
 const withApiPrefix = (url?: string): string => {
   if (!url) return "";
   return url.startsWith("/api") ? url : `/api${url}`;
 };
 
+// ✅ Request Interceptor
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
 
       if (!isPublicRoute(config.url) && isValidJwt(token)) {
-        config.headers.set("Authorization", `Bearer ${token}`);
         config.headers["Authorization"] = `Bearer ${token}`;
         console.log("[Auth] ✔ Token attached");
       } else {
@@ -59,7 +62,6 @@ instance.interceptors.request.use(
 
     config.url = withApiPrefix(config.url);
     console.log(`[Request] ➡ ${config.method?.toUpperCase()} ${config.url}`);
-
     return config;
   },
   (error: AxiosError) => {
@@ -68,6 +70,7 @@ instance.interceptors.request.use(
   }
 );
 
+// ✅ Response Interceptor
 instance.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
@@ -75,7 +78,7 @@ instance.interceptors.response.use(
     const data = error.response?.data;
 
     if (status === 401) {
-      console.warn("[Auth] Unauthorized - token may be invalid or expired");
+      console.warn("[Auth] Unauthorized - token invalid/expired");
     } else if (status === 403) {
       console.warn("[Auth] Forbidden - access denied");
     }
@@ -86,4 +89,3 @@ instance.interceptors.response.use(
 );
 
 export default instance;
-
