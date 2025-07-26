@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../axios";
-import { useNavigate } from "react-router-dom";
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -16,12 +15,12 @@ export default function VerifyEmail() {
     }
 
     axiosInstance
-      .get(`/api/auth/verify?token=${token}`)
+      .get(`/api/auth/verify-email?token=${token}`)
       .then(() => {
         setMessage("Email verified successfully! Redirecting to login...");
         setTimeout(() => {
           navigate("/login");
-        }, 3000);
+        }, 3000); // 3-second delay
       })
       .catch(() => {
         setMessage("Verification failed. Token may be expired or invalid.");

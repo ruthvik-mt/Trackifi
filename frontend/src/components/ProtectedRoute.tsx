@@ -12,7 +12,7 @@
 
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { JSX } from "react";
+import { JSX, useEffect, useState } from "react";
 
 interface ProtectedRouteProps {
   children: JSX.Element;
@@ -20,6 +20,13 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { token } = useAuth();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    setChecking(false);
+  }, [token]);
+
+  if (checking) return null; // Wait until token is checked
 
   if (!token) {
     return <Navigate to="/" replace />;
@@ -27,4 +34,5 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   return children;
 }
+
 

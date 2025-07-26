@@ -116,36 +116,45 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem("authToken");
+    return localStorage.getItem("token"); // Load token from localStorage
   });
 
-  // ✅ Set or remove the Authorization header based on token
+  // Attach token to axios on token change
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      console.debug("[Auth] Token set in axios headers");
     } else {
       delete axios.defaults.headers.common["Authorization"];
+      console.debug("[Auth] Token removed from axios headers");
     }
   }, [token]);
 
-  // ✅ Login and store token in state & localStorage
+  // Login function
   const login = async (email: string, password: string) => {
     try {
       const response = await loginApi({ email, password });
-      const token = response.token;
 
-      setToken(token);
-      localStorage.setItem("authToken", token);
+      const accessToken = response.accessToken;
+      if (!accessToken) {
+        throw new Error("No access token received from server.");
+      }
+
+      setToken(accessToken);
+      localStorage.setItem("token", accessToken);
+
+      console.debug("[Auth] Login successful, token stored");
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("[Auth] Login failed:", error);
       throw error;
     }
   };
 
-  // ✅ Logout: clear state and localStorage
+  // Logout function
   const logout = () => {
     setToken(null);
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
+    console.debug("[Auth] Logged out, token cleared");
   };
 
   return (

@@ -21,45 +21,45 @@
 // src/api/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-// ✅ Axios instance using Vite env
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // for sending cookies
+   withCredentials: true,
 });
 
-// ✅ Check for valid JWT
 const isValidJwt = (token: string | null): boolean => {
   return !!token && token.split(".").length === 3;
 };
 
-// ✅ Public route checker
 const isPublicRoute = (url?: string): boolean => {
   if (!url) return false;
   return url.includes("/auth/login") || url.includes("/auth/register");
 };
 
-// ✅ Request Interceptor
+const withApiPrefix = (url?: string): string => {
+  if (!url) return "";
+  return url.startsWith("/api") ? url : `/api${url}`;
+};
+
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
 
-      if (!isPublicRoute(config.url)) {
-        if (isValidJwt(token)) {
-          config.headers.set("Authorization", `Bearer ${token}`);
-          console.log("[Auth] ✔ Token attached to request");
-        } else {
-          console.warn("[Auth] ⚠ No valid token found");
-        }
+      if (!isPublicRoute(config.url) && isValidJwt(token)) {
+        config.headers.set("Authorization", `Bearer ${token}`);
+        config.headers["Authorization"] = `Bearer ${token}`;
+        console.log("[Auth] ✔ Token attached");
       } else {
-        console.log("[Auth] ⏭ Public route, no token attached");
+        console.log("[Auth] ⏭ Public route or invalid token");
       }
     }
 
+    config.url = withApiPrefix(config.url);
     console.log(`[Request] ➡ ${config.method?.toUpperCase()} ${config.url}`);
+
     return config;
   },
   (error: AxiosError) => {
@@ -68,13 +68,22 @@ instance.interceptors.request.use(
   }
 );
 
-// ✅ Response Interceptor
 instance.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    console.error("[Axios Response Error]:", error.response?.data || error.message);
+    const status = error.response?.status;
+    const data = error.response?.data;
+
+    if (status === 401) {
+      console.warn("[Auth] Unauthorized - token may be invalid or expired");
+    } else if (status === 403) {
+      console.warn("[Auth] Forbidden - access denied");
+    }
+
+    console.error("[Axios Response Error]:", data || error.message);
     return Promise.reject(error);
   }
 );
 
 export default instance;
+
