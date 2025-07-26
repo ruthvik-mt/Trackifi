@@ -69,7 +69,7 @@ public class AuthService {
         emailService.sendSimpleEmail(
                 user.getEmail(),
                 "Verify your email",
-                "Click the link to verify your account: " + verifyUrl
+                "Hi " + user.getFullName() + ",\n\nPlease verify your account by clicking the link below:\n" + verifyUrl + "\n\nThis link will expire in 24 hours."
         );
 
         return new AuthenticationResponse("Registration successful. Please verify your email.");
@@ -105,12 +105,16 @@ public class AuthService {
      * Authenticates the user and returns access and refresh tokens.
      */
     public AuthenticationResponse login(AuthenticationRequest request) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Invalid email or password.");
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found."));

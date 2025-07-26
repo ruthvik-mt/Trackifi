@@ -10,7 +10,7 @@ import CategoryBreakdown from "./pages/Insights/CategoryBreakdown";
 import BudgetComparison from "./pages/Insights/BudgetComparison";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
-import EmailVerificationPage from "./pages/Auth/VerifyEmail"; // ✅ Added
+import VerifyEmail from "./pages/Auth/VerifyEmail"; // ✅ Added
 
 export default function App() {
   return (
@@ -23,7 +23,7 @@ export default function App() {
       <Route path="/register" element={<Register />} />
 
       {/* ✅ Email Verification Route */}
-      <Route path="/verify-email" element={<EmailVerificationPage />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
 
       {/* Protected Routes */}
       <Route
