@@ -64,7 +64,7 @@ public class AuthService {
 
         tokenRepository.save(verificationToken);
 
-        String verifyUrl = baseUrl + "/api/auth/verify?token=" + token;
+        String verifyUrl = baseUrl + "/verify-email?token=" + token;
 
         emailService.sendSimpleEmail(
                 user.getEmail(),
