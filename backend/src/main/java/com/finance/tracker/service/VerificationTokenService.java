@@ -1,16 +1,17 @@
 package com.finance.tracker.service;
 
-import com.finance.tracker.model.VerificationToken;
-import com.finance.tracker.repository.VerificationTokenRepository;
 import com.finance.tracker.model.User;
+import com.finance.tracker.model.VerificationToken;
 import com.finance.tracker.repository.UserRepository;
+import com.finance.tracker.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional; // ✅ Add this
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Transactional // ✅ Ensures DB changes (update & delete) are committed
 public class VerificationTokenService {
 
     private final VerificationTokenRepository tokenRepository;
@@ -23,11 +24,11 @@ public class VerificationTokenService {
                     User user = verificationToken.getUser();
                     if (user == null) return false;
 
-                    user.setEmailVerified(true);
-                    userRepository.save(user);
-                    tokenRepository.delete(verificationToken);
+                    user.setEmailVerified(true);                // ✅ Update user
+                    userRepository.save(user);                  // ✅ Save updated user
+                    tokenRepository.delete(verificationToken);  // ✅ Delete used token
                     return true;
                 })
-                .orElse(false);
+                .orElse(false); // Invalid or expired token
     }
 }
