@@ -4,7 +4,6 @@ import com.finance.tracker.dto.*;
 import com.finance.tracker.model.*;
 import com.finance.tracker.repository.*;
 import com.finance.tracker.security.JwtService;
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.*;
@@ -28,6 +27,8 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final UserDetailsService userDetailsService;
     private final EmailService emailService;
+
+    private final RefreshTokenService refreshTokenService;  // <--- inject this
 
     @Value("${frontend.url}")
     private String baseUrl;
@@ -123,38 +124,40 @@ public class AuthService {
             throw new RuntimeException("Email not verified. Please check your inbox.");
         }
 
-        String token = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String accessToken = jwtService.generateToken(user);
 
-        return new AuthenticationResponse(token, refreshToken, "Login successful.");
+        // CREATE & SAVE refresh token in DB
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+        String refreshTokenStr = refreshToken.getToken();
+
+        return new AuthenticationResponse(accessToken, refreshTokenStr, "Login successful.");
     }
 
     /**
      * Refreshes the access token using a valid refresh token.
      */
-    public AuthenticationResponse refreshToken(String refreshToken) {
-        if (isNullOrEmpty(refreshToken)) {
+    public AuthenticationResponse refreshToken(String refreshTokenStr) {
+        if (isNullOrEmpty(refreshTokenStr)) {
             throw new IllegalArgumentException("Refresh token is required.");
         }
 
-        String email;
-        try {
-            email = jwtService.extractUsername(refreshToken);
-        } catch (JwtException e) {
-            throw new RuntimeException("Invalid refresh token.");
-        }
+        // Validate token exists in DB and is not expired
+        RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenStr)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found. Please login again."));
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found."));
+        refreshTokenService.verifyExpiration(refreshToken);
 
-        if (!jwtService.isTokenValid(refreshToken, user)) {
-            throw new RuntimeException("Refresh token is invalid or expired.");
-        }
+        User user = refreshToken.getUser();
 
         String newAccessToken = jwtService.generateToken(user);
-        String newRefreshToken = jwtService.generateRefreshToken(user);
 
-        return new AuthenticationResponse(newAccessToken, newRefreshToken, "Token refreshed.");
+        // OPTIONAL: create a new refresh token on refresh and delete the old one,
+        // or reuse existing token. Here, let's create a new one and delete old.
+
+        refreshTokenService.deleteByUserId(user.getId());
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+        return new AuthenticationResponse(newAccessToken, newRefreshToken.getToken(), "Token refreshed.");
     }
 
     private boolean isNullOrEmpty(String str) {

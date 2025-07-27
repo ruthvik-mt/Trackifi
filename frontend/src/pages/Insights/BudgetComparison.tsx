@@ -52,7 +52,7 @@ export default function BudgetComparison() {
     setLoading(true);
 
     axios
-      .get("/insights/budget-comparison", { params: { month } })
+      .get("/api/insights/budget-comparison", { params: { month } })
       .then((res) => {
         const cleaned: BudgetComparisonItem[] = (res.data as unknown[])
           .filter(

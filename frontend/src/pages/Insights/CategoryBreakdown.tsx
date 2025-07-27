@@ -44,7 +44,7 @@ export default function CategoryBreakdown() {
     setLoading(true);
 
     axios
-      .get("/insights/category-breakdown", { params: { month } })
+      .get("/api/insights/category-breakdown", { params: { month } })
       .then((res) => {
         const raw = res.data;
         const transformed = Object.entries(raw).map(

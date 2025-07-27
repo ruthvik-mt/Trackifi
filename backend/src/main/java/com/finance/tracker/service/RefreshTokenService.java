@@ -23,13 +23,19 @@ public class RefreshTokenService {
     private Long refreshTokenDurationMs;
 
     public RefreshToken createRefreshToken(UUID userId) {
-        return refreshTokenRepository.save(
-                RefreshToken.builder()
-                        .user(userRepository.findById(userId).orElseThrow())
-                        .token(UUID.randomUUID().toString())
-                        .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
-                        .build()
-        );
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // Delete existing token if present (because of @OneToOne mapping)
+        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .token(UUID.randomUUID().toString())
+                .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
+                .build();
+
+        return refreshTokenRepository.save(refreshToken);
     }
 
     public Optional<RefreshToken> findByToken(String token) {
@@ -45,6 +51,9 @@ public class RefreshTokenService {
     }
 
     public int deleteByUserId(UUID userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).orElseThrow());
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        return refreshTokenRepository.deleteByUser(user);
     }
 }
