@@ -20,7 +20,7 @@ public class RefreshToken {
     private String token;
 
     // Cascade and orphan removal to auto-delete refresh token with user
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
