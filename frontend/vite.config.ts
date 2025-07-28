@@ -135,12 +135,12 @@ export default defineConfig(() => {
         "@": path.resolve(__dirname, "src"),
       },
     },
-     server: {
+    server: {
       port: 3000, // ✅ Run dev server on port 3000
     },
     build: {
       outDir: "dist",
-      chunkSizeWarningLimit: 1000, // Optional: Raise limit to suppress warning
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -154,5 +154,9 @@ export default defineConfig(() => {
         },
       },
     },
+    optimizeDeps: {
+      include: ["react", "react-dom"],
+    },
   };
 });
+
