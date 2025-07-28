@@ -132,7 +132,7 @@ public class AuthService {
                 .httpOnly(true)
                 .secure(true) // Set to false if not using HTTPS during local testing
                 .path("/")
-                .sameSite("Strict")
+                .sameSite("None")
                 .maxAge(Duration.ofDays(7))
                 .build();
 

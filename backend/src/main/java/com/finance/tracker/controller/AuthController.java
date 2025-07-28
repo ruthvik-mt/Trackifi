@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,8 +26,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<AuthenticationResponse> login(
+            @RequestBody @Valid AuthenticationRequest request,
+            HttpServletResponse response) {
+        return ResponseEntity.ok(authService.login(request, response)); // ✅ pass response
     }
 
     @GetMapping("/verify-email")
@@ -41,12 +44,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthenticationResponse> refreshToken(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+    public ResponseEntity<AuthenticationResponse> refreshToken(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
         if (refreshToken == null) {
             return ResponseEntity.badRequest().body(null);
         }
 
-        return ResponseEntity.ok(authService.refreshToken(refreshToken));
+        return ResponseEntity.ok(authService.refreshToken(refreshToken, response));
     }
 }
 
