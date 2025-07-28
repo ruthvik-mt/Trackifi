@@ -82,11 +82,11 @@ public class TrackerApplication {
 	public CommandLineRunner seedAdminUser(UserRepository userRepo,
 										   PasswordEncoder encoder) {
 		return args -> {
-			userRepo.findByEmail("trackifi7@gmail.com").ifPresentOrElse(
+			userRepo.findByEmail("admin@example.com").ifPresentOrElse(
 					u -> System.out.println("Admin already exists."),
 					() -> {
 						User admin = User.builder()
-								.email("trackifi7@gmail.com")
+								.email("admin@example.com")
 								.password(encoder.encode("admin123"))
 								.fullName("Admin User")
 								.role(Role.ADMIN)
