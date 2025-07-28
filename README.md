@@ -57,9 +57,16 @@ Each stage introduces new features, charts, and intelligent feedback to help use
 
 ## Installation
 
-### 🖥️ Frontend (Next.js + Vite + shadcn/ui)
+### Frontend 
 
 ```bash
-git clone https://github.com/your-username/trackifi.git
-cd trackifi/frontend
+git clone https://github.com/ruthvik-mt/trackifi.git
+cd frontend
 npm install
+```
+### Backend
+
+```bash
+cd backend
+.\mvnw spring-boot:run
+```
