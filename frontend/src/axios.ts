@@ -334,7 +334,7 @@ instance.interceptors.response.use(
 
       return new Promise((resolve, reject) => {
         instance
-          .post("/api/auth/refresh")
+          .post("/api/auth/refresh", null, { withCredentials: true })
           .then((res) => {
             const newToken = res.data?.accessToken;
             if (!newToken) throw new Error("No accessToken in refresh response");

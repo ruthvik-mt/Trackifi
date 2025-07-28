@@ -4,14 +4,18 @@ import com.finance.tracker.dto.*;
 import com.finance.tracker.model.*;
 import com.finance.tracker.repository.*;
 import com.finance.tracker.security.JwtService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,15 +31,11 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final UserDetailsService userDetailsService;
     private final EmailService emailService;
-
-    private final RefreshTokenService refreshTokenService;  // <--- inject this
+    private final RefreshTokenService refreshTokenService;
 
     @Value("${frontend.url}")
     private String baseUrl;
 
-    /**
-     * Registers a new user and sends a verification email.
-     */
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
         if (isNullOrEmpty(request.getEmail()) || isNullOrEmpty(request.getPassword()) || isNullOrEmpty(request.getFullName())) {
@@ -76,36 +76,7 @@ public class AuthService {
         return new AuthenticationResponse("Registration successful. Please verify your email.");
     }
 
-    /**
-     * Verifies the token sent via email for email confirmation.
-     */
-    @Transactional
-    public String verifyToken(String token) {
-        Optional<VerificationToken> optionalToken = tokenRepository.findByToken(token);
-
-        if (optionalToken.isEmpty()) {
-            return "Invalid or expired verification token.";
-        }
-
-        VerificationToken verificationToken = optionalToken.get();
-
-        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            tokenRepository.delete(verificationToken);
-            return "Verification token has expired.";
-        }
-
-        User user = verificationToken.getUser();
-        user.setEmailVerified(true);
-        userRepository.save(user);
-        tokenRepository.delete(verificationToken);
-
-        return "Email verified successfully.";
-    }
-
-    /**
-     * Authenticates the user and returns access and refresh tokens.
-     */
-    public AuthenticationResponse login(AuthenticationRequest request) {
+    public AuthenticationResponse login(AuthenticationRequest request, HttpServletResponse response) {
         try {
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -126,38 +97,46 @@ public class AuthService {
 
         String accessToken = jwtService.generateToken(user);
 
-        // CREATE & SAVE refresh token in DB
+        // CREATE refresh token in DB
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
-        String refreshTokenStr = refreshToken.getToken();
 
-        return new AuthenticationResponse(accessToken, refreshTokenStr, "Login successful.");
+        // SET refresh token in HttpOnly cookie
+        addRefreshTokenToCookie(refreshToken.getToken(), response);
+
+        return new AuthenticationResponse(accessToken, null, "Login successful.");
     }
 
-    /**
-     * Refreshes the access token using a valid refresh token.
-     */
-    public AuthenticationResponse refreshToken(String refreshTokenStr) {
+    public AuthenticationResponse refreshToken(String refreshTokenStr, HttpServletResponse response) {
         if (isNullOrEmpty(refreshTokenStr)) {
             throw new IllegalArgumentException("Refresh token is required.");
         }
 
-        // Validate token exists in DB and is not expired
         RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenStr)
                 .orElseThrow(() -> new RuntimeException("Refresh token not found. Please login again."));
 
         refreshTokenService.verifyExpiration(refreshToken);
-
         User user = refreshToken.getUser();
 
         String newAccessToken = jwtService.generateToken(user);
 
-        // OPTIONAL: create a new refresh token on refresh and delete the old one,
-        // or reuse existing token. Here, let's create a new one and delete old.
-
+        // Replace the refresh token in DB and cookie
         refreshTokenService.deleteByUserId(user.getId());
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user.getId());
+        addRefreshTokenToCookie(newRefreshToken.getToken(), response);
 
-        return new AuthenticationResponse(newAccessToken, newRefreshToken.getToken(), "Token refreshed.");
+        return new AuthenticationResponse(newAccessToken, null, "Token refreshed.");
+    }
+
+    private void addRefreshTokenToCookie(String token, HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", token)
+                .httpOnly(true)
+                .secure(true) // Set to false if not using HTTPS during local testing
+                .path("/")
+                .sameSite("Strict")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     private boolean isNullOrEmpty(String str) {
