@@ -135,6 +135,9 @@ export default defineConfig(() => {
         "@": path.resolve(__dirname, "src"),
       },
     },
+     server: {
+      port: 3000, // ✅ Run dev server on port 3000
+    },
     build: {
       outDir: "dist",
       chunkSizeWarningLimit: 1000, // Optional: Raise limit to suppress warning
