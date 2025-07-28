@@ -60,7 +60,7 @@ Each stage introduces new features, charts, and intelligent feedback to help use
 ### Frontend 
 
 ```bash
-git clone https://github.com/ruthvik-mt/trackifi.git
+git clone https://github.com/ruthvik-mt/Trackifi.git
 cd frontend
 npm install
 ```
