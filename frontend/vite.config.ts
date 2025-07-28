@@ -81,55 +81,93 @@
 //   };
 // });
 
+// import { defineConfig } from "vite";
+// import react from "@vitejs/plugin-react";
+// // import { VitePWA } from "vite-plugin-pwa"; // 🧹 Temporarily disable PWA
+// import path from "path";
+
+// export default defineConfig(() => {
+//   return {
+//     envDir: "./",
+//     plugins: [
+//       react(),
+//       // VitePWA({
+//       //   registerType: "autoUpdate",
+//       //   includeAssets: [
+//       //     "favicon.ico",
+//       //     "apple-touch-icon.png",
+//       //     "android-chrome-192x192.png",
+//       //     "android-chrome-512x512.png",
+//       //     "logo-dark.png",
+//       //     "logo-light.png",
+//       //   ],
+//       //   manifest: {
+//       //     name: "Finance Tracker",
+//       //     short_name: "Finance",
+//       //     description: "Track your income and expenses effortlessly.",
+//       //     theme_color: "#ffffff",
+//       //     background_color: "#ffffff",
+//       //     display: "standalone",
+//       //     start_url: "/",
+//       //     icons: [
+//       //       {
+//       //         src: "android-chrome-192x192.png",
+//       //         sizes: "192x192",
+//       //         type: "image/png",
+//       //       },
+//       //       {
+//       //         src: "android-chrome-512x512.png",
+//       //         sizes: "512x512",
+//       //         type: "image/png",
+//       //       },
+//       //       {
+//       //         src: "android-chrome-512x512.png",
+//       //         sizes: "512x512",
+//       //         type: "image/png",
+//       //         purpose: "any maskable",
+//       //       },
+//       //     ],
+//       //   },
+//       // }),
+//     ],
+//     resolve: {
+//       alias: {
+//         "@": path.resolve(__dirname, "src"),
+//       },
+//     },
+//     server: {
+//       port: 3000,
+//     },
+//     build: {
+//       outDir: "dist",
+//       chunkSizeWarningLimit: 1000,
+//       rollupOptions: {
+//         output: {
+//           manualChunks(id) {
+//             if (id.includes("node_modules")) {
+//               if (id.includes("react")) return "vendor-react";
+//               if (id.includes("chart.js")) return "vendor-charts";
+//               if (id.includes("date-fns")) return "vendor-date";
+//               return "vendor";
+//             }
+//           },
+//         },
+//       },
+//     },
+//     optimizeDeps: {
+//       include: ["react", "react-dom"],
+//     },
+//   };
+// });
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-// import { VitePWA } from "vite-plugin-pwa"; // 🧹 Temporarily disable PWA
 import path from "path";
 
 export default defineConfig(() => {
   return {
     envDir: "./",
-    plugins: [
-      react(),
-      // VitePWA({
-      //   registerType: "autoUpdate",
-      //   includeAssets: [
-      //     "favicon.ico",
-      //     "apple-touch-icon.png",
-      //     "android-chrome-192x192.png",
-      //     "android-chrome-512x512.png",
-      //     "logo-dark.png",
-      //     "logo-light.png",
-      //   ],
-      //   manifest: {
-      //     name: "Finance Tracker",
-      //     short_name: "Finance",
-      //     description: "Track your income and expenses effortlessly.",
-      //     theme_color: "#ffffff",
-      //     background_color: "#ffffff",
-      //     display: "standalone",
-      //     start_url: "/",
-      //     icons: [
-      //       {
-      //         src: "android-chrome-192x192.png",
-      //         sizes: "192x192",
-      //         type: "image/png",
-      //       },
-      //       {
-      //         src: "android-chrome-512x512.png",
-      //         sizes: "512x512",
-      //         type: "image/png",
-      //       },
-      //       {
-      //         src: "android-chrome-512x512.png",
-      //         sizes: "512x512",
-      //         type: "image/png",
-      //         purpose: "any maskable",
-      //       },
-      //     ],
-      //   },
-      // }),
-    ],
+    plugins: [react()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "src"),
@@ -145,7 +183,6 @@ export default defineConfig(() => {
         output: {
           manualChunks(id) {
             if (id.includes("node_modules")) {
-              if (id.includes("react")) return "vendor-react";
               if (id.includes("chart.js")) return "vendor-charts";
               if (id.includes("date-fns")) return "vendor-date";
               return "vendor";
@@ -154,8 +191,6 @@ export default defineConfig(() => {
         },
       },
     },
-    optimizeDeps: {
-      include: ["react", "react-dom"],
-    },
+    // ✅ Removed optimizeDeps.include
   };
 });

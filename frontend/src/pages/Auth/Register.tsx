@@ -208,7 +208,7 @@ export default function Register() {
             </div>
           </>
         ) : (
-          <>
+            <>
             <FormInput
               label="Full Name"
               type="text"
@@ -234,13 +234,29 @@ export default function Register() {
               required
             />
 
-            {!isPasswordStrong(password) && password.length > 0 && (
-              <p className="text-sm text-red-500">
-                Password must include 4 of: uppercase, lowercase, number, symbol, and be 8+ characters.
-              </p>
+            {password.length > 0 && (
+              <ul className="text-sm text-muted-foreground space-y-1">
+              <li className={/.{8,}/.test(password) ? "text-green-600" : "text-red-500"}>
+                • At least 8 characters
+              </li>
+              <li className={/[A-Z]/.test(password) ? "text-green-600" : "text-red-500"}>
+                • One uppercase letter
+              </li>
+              <li className={/[a-z]/.test(password) ? "text-green-600" : "text-red-500"}>
+                • One lowercase letter
+              </li>
+              <li className={/[0-9]/.test(password) ? "text-green-600" : "text-red-500"}>
+                • One number
+              </li>
+              <li className={/[\W_]/.test(password) ? "text-green-600" : "text-red-500"}>
+                • One special character
+              </li>
+              </ul>
             )}
 
-            {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
 
             <button
               type="submit"
@@ -253,10 +269,10 @@ export default function Register() {
             <div className="text-center text-sm text-muted-foreground">
               Already registered?{" "}
               <Link to="/login" className="text-blue-600 font-medium underline">
-                Login
+              Login
               </Link>
             </div>
-          </>
+            </>
         )}
       </motion.form>
     </div>
