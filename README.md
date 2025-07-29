@@ -25,10 +25,6 @@ The project is developed in three progressive stages:
 1. **Basic Transaction Tracking**
 2. **Categorized Analytics**
 3. **Monthly Budgeting & Insights**
-
-Each stage introduces new features, charts, and intelligent feedback to help users make smarter financial decisions.
-
-
 ---
 
 ## Live Demo
