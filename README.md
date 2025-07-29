@@ -70,3 +70,41 @@ npm install
 cd backend
 .\mvnw spring-boot:run
 ```
+## Production: Build and Run
+```
+npm run build or vite build
+npm run dev
+```
+## Deployment:
+
+- Frontend Deployment: Vercel, Netlify, or any static hosting that supports Vite.
+- Backend Deployment: Railway, Render, or Heroku.
+
+## Contributing:
+
+1. Fork the repository
+2. Clone the repository:
+   
+```
+git clone https://github.com/ruthvik-mt/Trackifi.git
+````
+```
+cd Trackifi
+```
+```
+git remote add upstream https://github.com/ruthvik-mt/Trackifi.git
+```
+3. Now, if you run ```git remote -v``` you should see two remote repositories named:
+- `origin` (forked repository)
+- `upstream` (Trackifi repository)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) file for more details.
+
+##
+
+<div align="center">
+  <strong>Made with ❤️ using Springboot</strong>
+</div>
+
