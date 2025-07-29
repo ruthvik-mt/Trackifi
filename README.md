@@ -1,6 +1,6 @@
 # Trackifi 
 
-A full-stack Personal Finance Visualizer web app to help users track expenses and manage spending with visual insights.
+A full-stack web app to help users track expenses and manage spending with visual insights.
 
 ## Table of Contents
 
