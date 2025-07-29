@@ -1,4 +1,4 @@
-# Trackifi 
+# 📊 Trackifi 
 
 A full-stack web app to help users track expenses and manage spending with visual insights.
 
