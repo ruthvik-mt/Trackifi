@@ -70,6 +70,16 @@ npm install
 cd backend
 .\mvnw spring-boot:run
 ```
+## Dockerize Backend
+
+The Spring Boot backend is fully containerized using Docker and can be built, run locally, or pushed to Docker Hub for deployment.
+
+### Build Docker Image
+From the `backend` directory:
+```bash
+docker build -t your-dockerhub-username/finance-tracker 
+docker push your-dockerhub-username/finance-tracker
+```
 ## Production: Build and Run
 ```
 npm run build or vite build
