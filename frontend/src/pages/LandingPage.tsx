@@ -524,15 +524,15 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* ───── Header ───── */}
+      {/* ────────────── Header ────────────── */}
       <header className="sticky top-0 z-10 h-16 bg-card text-card-foreground shadow-sm flex items-center justify-between px-4 sm:px-6">
-        <a href="#hero" className="flex items-center gap-2 text-lg font-bold text-primary whitespace-nowrap">
-          <img src="/logo-light.png" alt="Logo Light" className="w-7 h-7 block dark:hidden" />
-          <img src="/logo-dark.png" alt="Logo Dark" className="w-7 h-7 hidden dark:block" />
+        <a href="#hero" className="flex items-center gap-2 text-lg sm:text-xl font-bold text-primary">
+          <img src="/logo-light.png" alt="Trackifi Logo Light" className="w-7 h-7 block dark:hidden" />
+          <img src="/logo-dark.png" alt="Trackifi Logo Dark" className="w-7 h-7 hidden dark:block" />
           Trackifi
         </a>
 
-        <nav className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm justify-end">
+        <nav className="flex flex-wrap items-center gap-1 sm:gap-4 text-[10px] sm:text-sm justify-end">
           <a href="#features" className="font-medium hover:text-primary transition-colors">Features</a>
           <a href="#testimonials" className="font-medium hover:text-primary transition-colors">Testimonials</a>
           <a href="#faq" className="font-medium hover:text-primary transition-colors">FAQ</a>
@@ -554,7 +554,7 @@ export default function LandingPage() {
             <Spinner size="default" />
           ) : (
             <Link to="/register">
-              <button className="px-3 py-1.5 rounded-md text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90">
+              <button className="px-3 py-1.5 rounded-md text-[10px] sm:text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90">
                 Get Started
               </button>
             </Link>
@@ -562,21 +562,25 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      {/* ───── Hero ───── */}
+      {/* ────────────── Hero Section ────────────── */}
       <motion.section
         id="hero"
-        className="text-center px-4 py-16 sm:py-24 max-w-4xl mx-auto mb-16 sm:mb-32"
+        className="text-center px-4 sm:px-6 py-20 sm:py-24 max-w-4xl mx-auto mb-24 sm:mb-32"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-3xl sm:text-5xl font-extrabold leading-snug sm:leading-tight mb-4 text-primary break-words">
-          Track. Plan. Thrive. <br className="hidden sm:block" /> Welcome to Smarter Finance
+        <h1 className="text-2xl sm:text-5xl font-extrabold leading-snug sm:leading-tight mb-4 text-primary">
+          Track. Plan. Thrive.
+          <br />
+          Welcome to Smarter Finance
         </h1>
 
-        <h2 className="text-3xl sm:text-5xl font-extrabold text-primary mb-6">Trackifi</h2>
+        <h2 className="text-4xl sm:text-6xl font-extrabold leading-tight mb-6 text-primary">
+          Trackifi
+        </h2>
 
-        <p className="text-sm sm:text-lg text-muted-foreground mb-8">
+        <p className="text-base sm:text-lg text-muted-foreground mb-8 px-2">
           Control your expenses, visualize your spending, and stay ahead with smart budgeting tools.
         </p>
 
@@ -587,8 +591,8 @@ export default function LandingPage() {
         ) : (
           <Link to="/register">
             <button
-              className="px-5 py-2.5 text-sm sm:text-base rounded-md font-semibold bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2"
               aria-label="Start tracking your expenses"
+              className="px-5 py-2.5 text-sm sm:text-base rounded-md font-semibold bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2"
             >
               Start Tracking <ArrowRight size={18} />
             </button>
@@ -596,16 +600,16 @@ export default function LandingPage() {
         )}
       </motion.section>
 
-      {/* ───── Features ───── */}
+      {/* ────────────── Features Section ────────────── */}
       <motion.section
         id="features"
-        className="py-16 sm:py-24 px-4 sm:px-6 bg-background"
+        className="py-20 sm:py-24 px-4 sm:px-6 bg-background"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
-        <div className="max-w-6xl mx-auto grid gap-6 sm:gap-12 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 text-center">
+        <div className="max-w-6xl mx-auto grid gap-8 sm:gap-12 md:grid-cols-3 text-center">
           {[
             {
               icon: "📊",
@@ -625,30 +629,36 @@ export default function LandingPage() {
           ].map(({ icon, title, desc }, index) => (
             <motion.div
               key={title}
-              className="p-5 rounded-2xl shadow-md hover:shadow-xl transition-transform"
+              className="p-6 rounded-2xl shadow-md hover:shadow-xl transition-transform"
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              whileHover={{ scale: 1.06 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
               viewport={{ once: true, amount: 0.3 }}
+              whileHover={{ scale: 1.06 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.2,
+                type: "spring",
+                stiffness: 120,
+              }}
             >
-              <div className="text-4xl mb-3">{icon}</div>
-              <h3 className="text-lg font-bold mb-2 text-primary">{title}</h3>
+              <div className="text-4xl sm:text-5xl mb-4">{icon}</div>
+              <h3 className="text-lg sm:text-xl font-bold mb-2 text-primary">{title}</h3>
               <p className="text-sm text-muted-foreground">{desc}</p>
             </motion.div>
           ))}
         </div>
       </motion.section>
 
-      {/* ───── Testimonials ───── */}
+      {/* ────────────── Testimonials Section ────────────── */}
       <motion.section
         id="testimonials"
-        className="py-16 sm:py-24 px-4 text-center"
+        className="py-20 sm:py-24 px-4 sm:px-6 bg-background text-center"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
+        <div className="h-10 bg-gradient-to-b from-transparent to-background" />
         <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-primary">What users are saying</h2>
         <div className="max-w-3xl mx-auto space-y-6">
           {[
@@ -657,7 +667,7 @@ export default function LandingPage() {
           ].map((text, index) => (
             <motion.blockquote
               key={index}
-              className="italic text-muted-foreground text-sm sm:text-base px-2"
+              className="italic text-muted-foreground text-sm sm:text-base"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
@@ -669,15 +679,16 @@ export default function LandingPage() {
         </div>
       </motion.section>
 
-      {/* ───── FAQ ───── */}
+      {/* ────────────── FAQ Section ────────────── */}
       <motion.section
         id="faq"
-        className="py-16 sm:py-24 px-4 bg-background"
+        className="py-20 sm:py-24 px-4 sm:px-6 bg-background"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
+        <div className="h-10 bg-gradient-to-b from-transparent to-background" />
         <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center text-primary">Frequently Asked Questions</h2>
         <div className="max-w-3xl mx-auto space-y-6">
           {[
@@ -704,37 +715,41 @@ export default function LandingPage() {
         </div>
       </motion.section>
 
-      {/* ───── CTA ───── */}
+      {/* ────────────── Call to Action ────────────── */}
       <motion.section
         id="cta"
-        className="py-16 sm:py-24 px-4 text-center bg-background"
+        className="py-20 sm:py-24 px-4 sm:px-6 bg-background text-center"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.8 }}
       >
+        <div className="h-10 bg-gradient-to-b from-transparent to-background" />
         <motion.div
           className="max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
         >
           <h2 className="text-2xl sm:text-4xl font-bold mb-6 text-primary">Ready to shape your finances?</h2>
-          <p className="mb-6 text-base text-muted-foreground">
+          <p className="mb-8 text-base text-muted-foreground">
             Join Trackifi today and start your journey toward smarter money habits.
           </p>
-          <a
-            href="https://mail.google.com/mail/?view=cm&to=trackifi7@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2.5 text-sm font-semibold bg-muted text-foreground border border-border rounded-md hover:bg-muted/80 inline-block"
-          >
-            Contact Us
-          </a>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a
+              href="https://mail.google.com/mail/?view=cm&to=trackifi7@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="min-w-[140px] sm:min-w-[160px] px-5 py-2.5 text-sm font-semibold bg-muted text-foreground border border-border rounded-md hover:bg-muted/80 text-center"
+            >
+              Contact Us
+            </a>
+            </div>
         </motion.div>
       </motion.section>
 
-      {/* ───── Footer ───── */}
+      {/* ────────────── Footer ────────────── */}
       <footer className="text-center py-6 text-xs sm:text-sm text-muted-foreground bg-background">
         © {new Date().getFullYear()} Trackifi. Built for smarter finance.
       </footer>
