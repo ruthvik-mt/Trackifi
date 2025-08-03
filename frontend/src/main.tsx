@@ -19,6 +19,27 @@
 //   </React.StrictMode>
 // );
 
+// import React from "react";
+// import ReactDOM from "react-dom/client";
+// import App from "./App";
+// import "./tailwind.css";
+
+// import { BrowserRouter } from "react-router-dom";
+// import { AuthProvider } from "./context/AuthProvider";
+// import { ThemeProvider } from "./context/ThemeProvider";
+
+// ReactDOM.createRoot(document.getElementById("root")!).render(
+//   <React.StrictMode>
+//     <BrowserRouter>
+//       <ThemeProvider>
+//         <AuthProvider>
+//           <App />
+//         </AuthProvider>
+//       </ThemeProvider>
+//     </BrowserRouter>
+//   </React.StrictMode>
+// );
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -27,6 +48,8 @@ import "./tailwind.css";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import { ThemeProvider } from "./context/ThemeProvider";
+
+import { registerSW } from "virtual:pwa-register";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -39,3 +62,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+registerSW();
