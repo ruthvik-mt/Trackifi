@@ -31,6 +31,8 @@ The project is developed in three progressive stages:
 
 🌐 Visit the website: [Trackifi](https://trackifii.vercel.app)  
 
+The PWA version can be installed on bothe desktop and mobile by clicking "Install Trackifi".
+
 ---
 
 ## Features
