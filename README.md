@@ -20,11 +20,6 @@ A full-stack web app to help users track expenses and manage spending with visua
 **Trackifi** is a personal finance web app that empowers users to manage spending, track expenses, set budgets, and gain financial insights through intuitive visualizations.
 
 The **frontend** is built using **React**, **TypeScript**, and **Vite**, offering a fast and responsive user experience. The **backend** is powered by **Spring Boot (Java)** and connects to a cloud-hosted **Neon PostgreSQL** database. The backend is **containerized with Docker** and published on **Docker Hub**.
-
-The project is developed in three progressive stages:
-1. **Basic Transaction Tracking**
-2. **Categorized Analytics**
-3. **Monthly Budgeting & Insights**
 ---
 
 ## Live Demo
