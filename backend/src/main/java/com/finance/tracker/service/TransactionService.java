@@ -18,13 +18,13 @@ import java.util.List;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final BudgetAlertService budgetAlertService; // ✅ Injected
+    private final BudgetAlertService budgetAlertService; 
 
     /** Create a new transaction for a user. */
     public Transaction createTransaction(Transaction transaction) {
         Transaction savedTransaction = transactionRepository.save(transaction);
 
-        // ✅ Check for budget threshold after saving
+        // Check for budget threshold after saving
         budgetAlertService.checkAndNotify(savedTransaction.getUser());
 
         return savedTransaction;
@@ -56,7 +56,6 @@ public class TransactionService {
 
         Transaction saved = transactionRepository.save(existing);
 
-        // ✅ Optionally recheck budget after update
         budgetAlertService.checkAndNotify(user);
 
         return saved;
@@ -77,7 +76,6 @@ public class TransactionService {
 
         transactionRepository.delete(transaction);
 
-        // ✅ Recheck budget (optional)
         budgetAlertService.checkAndNotify(user);
     }
 
