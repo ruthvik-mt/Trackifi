@@ -29,7 +29,7 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody @Valid AuthenticationRequest request,
             HttpServletResponse response) {
-        return ResponseEntity.ok(authService.login(request, response)); // ✅ pass response
+        return ResponseEntity.ok(authService.login(request, response)); 
     }
 
     @GetMapping("/verify-email")
