@@ -29,7 +29,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.user.id = :userId")
     double sumAmountByUserId(@Param("userId") UUID userId);
 
-    // ✅ Corrected version using native SQL for date grouping
     @Query(
             value = "SELECT DATE(t.date) AS day, SUM(t.amount) AS total " +
                     "FROM transaction t " +
