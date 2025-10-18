@@ -37,7 +37,6 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean emailVerified = false;
 
-    // ✅ Add this block to handle cascade delete for VerificationToken
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private VerificationToken verificationToken;
 
