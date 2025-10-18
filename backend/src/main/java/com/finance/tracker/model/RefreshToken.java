@@ -15,16 +15,13 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Indexed token column (performance improvement)
     @Column(nullable = false, unique = true)
     private String token;
 
-    // Cascade and orphan removal to auto-delete refresh token with user
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    // Add this field:
     @Column(nullable = false)
     private Instant expiryDate;
 }
