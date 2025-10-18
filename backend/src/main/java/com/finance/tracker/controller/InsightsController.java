@@ -22,7 +22,7 @@ public class InsightsController {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    // 📌 1. Total expenses for month
+    // Total expenses for month
     @GetMapping("/monthly-total")
     public BigDecimal getMonthlyTotal(@RequestParam String month, Principal principal) {
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
@@ -32,7 +32,7 @@ public class InsightsController {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // 📌 2. Category-wise expenses (for pie chart)
+    //Category-wise expenses (for pie chart)
     @GetMapping("/category-breakdown")
     public Map<String, BigDecimal> getCategoryBreakdown(@RequestParam String month, Principal principal) {
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
@@ -46,7 +46,7 @@ public class InsightsController {
                 ));
     }
 
-    // 📌 3. Budget vs Actual for each category
+    //Budget vs Actual for each category
     @GetMapping("/budget-comparison")
     public List<Map<String, Object>> getBudgetComparison(@RequestParam String month, Principal principal) {
         User user = userRepository.findByEmail(principal.getName()).orElseThrow();
@@ -54,7 +54,7 @@ public class InsightsController {
         List<Transaction> transactions = transactionService.getMonthlyTransactions(user, ym);
         List<Category> categories = categoryRepository.findByUser(user);
 
-        // ✅ Fixed: Change from UUID to Long
+        //Fixed: Change from UUID to Long
         Map<Long, BigDecimal> actualMap = transactions.stream()
                 .collect(Collectors.groupingBy(
                         t -> t.getCategory().getId(),
