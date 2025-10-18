@@ -14,7 +14,6 @@ type FormState = Omit<Transaction, "id" | "date"> & {
   date: Date;
 };
 
-// Helper to format date in YYYY-MM-DD without time
 const formatLocalDate = (date: Date): string => {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
@@ -59,7 +58,7 @@ export default function TransactionForm({ onSubmit, initial, onCancel }: Props) 
 
     const formatted: Omit<Transaction, "id"> = {
       ...form,
-      date: formatLocalDate(form.date), // Convert Date to 'YYYY-MM-DD'
+      date: formatLocalDate(form.date),
     };
 
     onSubmit(formatted);
