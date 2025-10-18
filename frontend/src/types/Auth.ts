@@ -16,8 +16,8 @@ export interface RegisterRequest {
 }
 
 export interface User {
-  id: string;           // UUID as a string
+  id: string;          
   email: string;
   fullName: string;
-  role: string;         // e.g. "USER", "ADMIN", etc.
+  role: string;         
 }
