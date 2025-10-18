@@ -6,22 +6,22 @@ import com.finance.tracker.repository.UserRepository;
 import com.finance.tracker.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // ✅ Add this
+import org.springframework.transaction.annotation.Transactional; 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Transactional // ✅ Ensures DB changes (update & delete) are committed
+@Transactional 
 public class VerificationTokenService {
 
     private final VerificationTokenRepository tokenRepository;
     private final UserRepository userRepository;
 
     public boolean verifyToken(String token) {
-        System.out.println("Received token: " + token);  // 👈 Debug log
+        System.out.println("Received token: " + token);  
         return tokenRepository.findByToken(token)
                 .filter(verificationToken -> {
-                    System.out.println("Found token: " + verificationToken.getToken()); // 👈 Debug log
+                    System.out.println("Found token: " + verificationToken.getToken()); 
                     return verificationToken.getExpiryDate().isAfter(LocalDateTime.now());
                 })
                 .map(verificationToken -> {
