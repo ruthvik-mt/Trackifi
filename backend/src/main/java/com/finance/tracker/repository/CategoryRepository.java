@@ -13,7 +13,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     // Fetch all categories for a specific user
     List<Category> findByUser(User user);
 
-    // Fetch a specific category by its ID (Optional to handle not found)
     Optional<Category> findById(Long categoryId);
 
     int countByUserId(UUID userId);
