@@ -6,11 +6,7 @@ import jakarta.persistence.Converter;
 import java.sql.Date;
 import java.time.YearMonth;
 
-/**
- * JPA Converter to persist {@link YearMonth} as SQL {@link Date}.
- * Only the first day of the month is stored.
- */
-@Converter(autoApply = false) // Use explicitly where needed (e.g., on @Convert fields)
+@Converter(autoApply = false) 
 public class YearMonthAttributeConverter implements AttributeConverter<YearMonth, Date> {
 
     @Override
