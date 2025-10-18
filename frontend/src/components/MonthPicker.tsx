@@ -36,7 +36,7 @@ export function MonthPicker({ selected, onChange }: MonthPickerProps) {
           endMonth={new Date(2030, 11)}
           className="rounded-md bg-background text-foreground"
           required
-          // 👇 Hide day cells completely
+          // Hide day cells completely
           classNames={{
             table: "hidden",
           }}
