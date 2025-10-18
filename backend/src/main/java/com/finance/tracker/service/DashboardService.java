@@ -8,7 +8,7 @@ import com.finance.tracker.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date; // ✅ Important for native query DATE results
+import java.sql.Date; 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,9 +35,9 @@ public class DashboardService {
         List<Object[]> results = transactionRepository.sumByDate(userId);
 
         return results.stream()
-                .filter(row -> row[0] != null && row[1] != null) // ✅ skip nulls
+                .filter(row -> row[0] != null && row[1] != null) 
                 .map(row -> new SpendingTrendPoint(
-                        ((Date) row[0]).toLocalDate().toString(),  // ✅ Convert java.sql.Date to LocalDate
+                        ((Date) row[0]).toLocalDate().toString(),
                         ((Number) row[1]).doubleValue()
                 ))
                 .collect(Collectors.toList());
