@@ -5,13 +5,13 @@ package com.finance.tracker.exception;
  */
 public class TokenRefreshException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L; // Best practice for Serializable classes
+    private static final long serialVersionUID = 1L; 
 
     public TokenRefreshException(String message) {
         super(message);
     }
 
     public TokenRefreshException(String message, Throwable cause) {
-        super(message, cause); // Optional: constructor to wrap other exceptions
+        super(message, cause);
     }
 }
