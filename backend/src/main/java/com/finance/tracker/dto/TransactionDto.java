@@ -16,5 +16,5 @@ public class TransactionDto {
     private LocalDate date;
     private Long categoryId;
     private String categoryName;
-    private UUID userId; // ✅ Only if needed in response
+    private UUID userId;
 }
