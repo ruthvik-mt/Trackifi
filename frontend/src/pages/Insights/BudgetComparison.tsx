@@ -16,14 +16,12 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { MonthPicker } from "@/components/MonthPicker";
 
-// ✅ Format date to YYYY-MM
 function formatMonth(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   return `${year}-${month}`;
 }
 
-// ✅ Aggregate by category
 function aggregateByCategory(data: BudgetComparisonItem[]) {
   const map = new Map<string, BudgetComparisonItem>();
   for (const item of data) {
