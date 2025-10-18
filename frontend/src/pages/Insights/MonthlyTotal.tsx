@@ -20,7 +20,6 @@ import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { MonthPicker } from "@/components/MonthPicker";
 
-// ✅ Safer month formatting (avoids timezone issues)
 function formatMonth(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
