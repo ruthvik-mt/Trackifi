@@ -24,7 +24,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* ✅ Email Verification Route */}
+        {/* Email Verification Route */}
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         {/* Protected Routes */}
@@ -89,7 +89,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 
-      {/* ✅ Place this outside <Routes> */}
+      {/* Place this outside <Routes> */}
       <InstallPrompt />
     </>
   );
