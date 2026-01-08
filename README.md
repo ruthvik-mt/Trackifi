@@ -81,8 +81,8 @@ npm run dev
 ```
 ## Deployment:
 
-- Frontend Deployment: Vercel, Netlify, or any static hosting that supports Vite.
-- Backend Deployment: Railway, Render, or Heroku.
+- Frontend Deployment: Vercel or Netlify
+- Backend Deployment: Railway, Render or Heroku
 
 ## Contributing:
 
