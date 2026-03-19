@@ -1,0 +1,40 @@
+# General
+HELP.md
+*.log
+.env
+.env.*
+!.env.example
+
+# Maven build output
+target/
+build/
+bin/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IntelliJ / VS Code / Eclipse / NetBeans
+.idea/
+*.iml
+*.ipr
+*.iws
+
+.vscode/
+.classpath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+.nb-gradle/
+nbbuild/
+dist/
+nbdist/
+nbproject/private/
+
+# Auto-generated or dev-specific folders
+.apt_generated/
+.apt_generated_tests/
+.history/
+test/
+

@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: trackifi-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ACCESS_TOKEN_EXPIRATION
+        value: 1d
+      - key: JWT_REFRESH_TOKEN_EXPIRATION
+        value: 7d
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

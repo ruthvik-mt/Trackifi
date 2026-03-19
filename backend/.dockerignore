@@ -1,0 +1,36 @@
+# Build artifacts
+target/
+build/
+bin/
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+*.iml
+*.ipr
+*.iws
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Docs
+README.md
+*.md
+
+# Maven wrapper jar (already in image)
+!.mvn/wrapper/maven-wrapper.jar
+
+# Auto-generated
+.apt_generated/
+.apt_generated_tests/
+
+# Logs
+*.log

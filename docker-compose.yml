@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: trackifi-db
+    restart: always
+    environment:
+      POSTGRES_DB: financedb
+      POSTGRES_USER: trackifi_user
+      POSTGRES_PASSWORD: trackifi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: trackifi-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=${DB_URL:-jdbc:postgresql://db:5432/financedb}
+      - DB_USERNAME=${DB_USERNAME:-trackifi_user}
+      - DB_PASSWORD=${DB_PASSWORD:-trackifi_password}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION=${JWT_ACCESS_TOKEN_EXPIRATION:-1d}
+      - JWT_REFRESH_TOKEN_EXPIRATION=${JWT_REFRESH_TOKEN_EXPIRATION:-7d}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
